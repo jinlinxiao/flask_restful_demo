@@ -15,15 +15,17 @@ def test_flask():
     res = requests.get("%s/" % Host, data=None)
     print(res.content)
     # print(res.headers)
-    print(res.json())
+    # print(res.json())
     assert res.status_code == 200
 
 
 def test_get_task_list():
     res = requests.get("%s/tasks" % Host, data=None)
-    print(res.content)
+    # print(res.content)
     # print(res.headers)
-    print(res.json())
+    tasks = res.json()
+    print(tasks)
+    print(list(tasks.keys())[-1])
     assert res.status_code == 200
 
 
@@ -40,6 +42,21 @@ def test_add_task():
     test_get_task_list()
 
 
+def test_delete_task():
+    res = requests.get("%s/tasks" % Host, data=None)
+    # print(res.content)
+    # print(res.headers)
+    tasks = res.json()
+    print(tasks)
+    task_id = list(tasks.keys())[-1]
+    assert res.status_code == 200
+    res = requests.delete("%s/tasks/%s" % (Host, task_id), data=None)
+    # print(res.json())
+    assert res.status_code == 204
+    res = requests.get("%s/tasks" % Host, data=None)
+    print(res.json())
+
+
 def test_add_task_illegal():
     data = {'task': 5}
     res = requests.post("%s/tasks" % Host, data=json.dumps(data))
@@ -48,10 +65,35 @@ def test_add_task_illegal():
 
 
 def test_add_task_illegal_no_task():
-    data = {'task': '5', 'bb': 6}
+    data = {'task': '5', 'bb': '6'}
     res = requests.post("%s/tasks" % Host, data=json.dumps(data))
     print(res.content)
     assert res.status_code == 400
+
+
+def test_get_one_task():
+    task_id = 'task1'
+    url = "%s/tasks/%s" % (Host, task_id)
+    res = requests.get(url, data=None)
+    assert res.status_code == 200
+    print(res.json())
+
+
+def test_update_one_task():
+    task_id = 'task1'
+    url = "%s/tasks/%s" % (Host, task_id)
+
+    res = requests.get(url, data=None)
+    assert res.status_code == 200
+    print(res.json())
+
+    task = "test_parser"
+    data = {
+        'task': task
+    }
+    res = requests.put(url, data=data)
+    assert res.status_code == 201
+    print(res.json())
 
 
 def test_parser_legal():

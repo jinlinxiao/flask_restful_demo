@@ -16,6 +16,6 @@ def register(app):
     #
     api = Api(app)
     api.add_resource(task_api.TaskList, '/tasks')
-    api.add_resource(task_api.Task, '/task/<task_id>')
+    api.add_resource(task_api.Task, '/tasks/<task_id>')
     api.add_resource(upload_api.Upload, '/upload')
 
